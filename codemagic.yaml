@@ -1,48 +1,25 @@
 workflows:
-  ios-release:
-    name: iOS Release
-    instance_type: mac_mini_m2
+  ios-android-release:
+    name: Build iOS & Android Release
+    instance_type: mac_mini_m1
     environment:
-      groups:
-        - app_store_credentials # In Codemagic UI, create an Environment variable group named 'app_store_credentials' and add 'APP_BUNDLE_ID'
       flutter: default
-      xcode: latest
-      cocoapods: default
+      groups:
+        # Add your Codemagic environment variable groups here if needed
+        # - app_store_credentials 
+        # - google_play_credentials
     scripts:
-      - name: Set up keychain to be used for codesigning using Codemagic CLI 'keychain' command
-        script: |
-          keychain initialize
-      - name: Fetch signing files
-        script: |
-          app-store-connect fetch-signing-files "$APP_BUNDLE_ID" --type IOS_APP_STORE --create
-      - name: Use system default keychain
-        script: |
-          keychain add-certificates
-      - name: Set up code signing settings on Xcode project
-        script: |
-          xcode-project use-profiles
-      - name: Get Flutter packages
-        script: |
-          flutter packages pub get
-      - name: Install iOS pods
+      - name: Get Flutter Packages
+        script: flutter packages pub get
+      - name: Build Android App Bundle
+        script: flutter build appbundle --release
+      - name: Build iOS IPA
         script: |
           find . -name "Podfile" -execdir pod install \;
-      - name: Flutter build ipa
-        script: |
-          flutter build ipa --release \
-            --export-options-plist=/Users/builder/export_options.plist
+          flutter build ipa --release --export-options-plist=/Users/builder/export_options.plist
     artifacts:
+      - build/app/outputs/bundle/**/*.aab
       - build/ios/ipa/*.ipa
-      - /tmp/xcodebuild_logs/*.log
-      - flutter_drive.log
     publishing:
-      email:
-        recipients:
-          - yourmail@example.com # Replace with your email address
-        notify:
-          success: true
-          failure: true
-      app_store_connect:
-        auth: integration
-        submit_to_testflight: true # Set to true to upload to TestFlight
-        submit_to_app_store: false # Set to true if you want Codemagic to also submit for App Store review
+      # Add publishing steps here later if you want automatic upload to App Store Connect / Google Play
+      # For now, it will build the artifacts and you can download or publish them via Codemagic UI.
