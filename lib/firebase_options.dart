@@ -12,6 +12,7 @@ class DefaultFirebaseOptions {
         return android;
       case TargetPlatform.iOS:
       case TargetPlatform.macOS:
+        return ios;
       case TargetPlatform.windows:
       case TargetPlatform.linux:
       case TargetPlatform.fuchsia:
@@ -19,6 +20,15 @@ class DefaultFirebaseOptions {
         return web; // Fallback
     }
   }
+
+  static const FirebaseOptions ios = FirebaseOptions(
+    apiKey: 'AIzaSyBp3lrjZ4p_ca1fwOeUHhMKC7W-p5bCnHs',
+    appId: '1:180588105581:ios:5c81c1ca6cebd8dfa65464',
+    messagingSenderId: '180588105581',
+    projectId: 'winleaf-tea',
+    storageBucket: 'winleaf-tea.firebasestorage.app',
+    iosBundleId: 'com.winleaf.app',
+  );
 
   static const FirebaseOptions web = FirebaseOptions(
     apiKey: 'AIzaSyBp3lrjZ4p_ca1fwOeUHhMKC7W-p5bCnHs',
